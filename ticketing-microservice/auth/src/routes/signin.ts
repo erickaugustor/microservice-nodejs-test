@@ -2,9 +2,8 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
-import { BadResquestError } from '../errors';
+import { BadRequestError, validateRequest } from '@sgtickets/common';
 
-import { validateRequest } from '../middlerware';
 import { User } from '../models';
 import { Password } from '../services';
 
@@ -21,13 +20,13 @@ router.post('/api/users/signin', validations, validateRequest, async (req: Reque
   const existingUser = await User.findOne({ email });
 
   if (!existingUser) {
-    throw new BadResquestError('Invalid credentials');
+    throw new BadRequestError('Invalid credentials');
   }
 
   const passwordsMatch = await Password.compare(existingUser.password, password);
 
   if (!passwordsMatch) {
-    throw new BadResquestError('Invalid credentials');
+    throw new BadRequestError('Invalid credentials');
   }
 
   // Generate JWT

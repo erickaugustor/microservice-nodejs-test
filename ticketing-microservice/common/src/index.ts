@@ -1,7 +1,7 @@
 import {
   RequestValidationError,
   DatabaseConnectionError,
-  BadResquestError,
+  BadRequestError,
   NotAuthorizedError,
   CustomError,
 } from './errors';
@@ -16,7 +16,7 @@ import {
 export {
   RequestValidationError,
   DatabaseConnectionError,
-  BadResquestError,
+  BadRequestError,
   NotAuthorizedError,
   CustomError,
 

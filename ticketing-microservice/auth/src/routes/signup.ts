@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 
-import { RequestValidationError, BadResquestError } from '../errors/';
+import { RequestValidationError, BadRequestError } from '@sgtickets/common';
 
 import { User } from '../models';
 
@@ -25,7 +25,7 @@ router.post ('/api/users/signup', [...validations], async (req: Request, res: Re
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new BadResquestError('Email in use');
+    throw new BadRequestError('Email in use');
   }
 
   const user = User.build({ email, password });

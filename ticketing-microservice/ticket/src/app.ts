@@ -6,11 +6,6 @@ import { errorHandler, NotFoundError } from '@sgtickets/common';
 
 import cookieSession from 'cookie-session';
 
-import { currentUserRouter } from './routes/current-user';
-import { signupRouter } from './routes/signup';
-import { signoutRouter } from './routes/signout'
-import { signinRouter } from './routes/signin';
-
 const app = express();
 
 app.set('trust proxy', true);
@@ -21,11 +16,6 @@ app.use(
     secure: true,
   })
 );
-
-app.use(currentUserRouter);
-app.use(signupRouter);
-app.use(signoutRouter);
-app.use(signinRouter);
 
 app.all('*', () => {
   throw new NotFoundError();
