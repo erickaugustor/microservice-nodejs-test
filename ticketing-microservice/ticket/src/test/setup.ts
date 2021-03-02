@@ -3,10 +3,12 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../app';
 
+import jwt from 'jsonwebtoken';
+
 declare global {
   namespace NodeJS {
     interface Global {
-      signin(): Promise<string[]>;
+      signin(): string[];
     }
   }
 }
@@ -38,19 +40,21 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = async () => {
-  const email = 'test@test.com';
-  const password = 'password';
+global.signin = () => {
+  // Build a JWT payload.
 
-  const response = await request(app)
-    .post('/api/users/signup')
-    .send({
-      email,
-      password
-    })
-    .expect(201);
+  const payload = {
+    id: '12122112',
+    email: 'test@test.com.br',
+  };
 
-  const cookie = response.get('Set-Cookie');
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  return cookie;
+  const session = { jwt: token };
+
+  const sessionJSON = JSON.stringify(session);
+
+  const base64 = Buffer.from(sessionJSON).toString('base64');
+
+  return [`express:sess=${base64}`];
 };
