@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { requireAuth, validateRequest } from '@sgtickets/common';
 import { Ticket } from '../models/ticket';
+import { TicketCreatedEvent } from '../events/publishers/ticket-created-publisher';
 
 const router = express.Router();
 
@@ -10,13 +11,12 @@ const emailValidation = body('title')
   .withMessage('Title is required');
 
 const priceValidation = body('price')
-  .isFloat({ gt: 0})
+  .isFloat({ gt: 0 })
   .withMessage('Price must be greater than 0');
 
 const validations = [emailValidation, priceValidation];
 
 router.post('/api/tickets', requireAuth, validations, validateRequest, async (req: Request, res: Response) => {
-    
   const { title, price } = req.body;
 
   const ticket = Ticket.build({
@@ -26,9 +26,14 @@ router.post('/api/tickets', requireAuth, validations, validateRequest, async (re
   });
 
   await ticket.save();
+  new TicketCreatedEvent(client).publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+  });
 
   res.sendStatus(200).send(ticket);
-  },
-);
+});
 
 export { router as createTicketRouter };
