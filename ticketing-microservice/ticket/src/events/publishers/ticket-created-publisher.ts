@@ -1,6 +1,6 @@
 import { Subjects, Publisher, TicketCreatedEvent } from '@sgtickets/common';
 
-export class TicketCreatedEvent extends Publisher<TicketCreatedEvent> {
+export class TicketCreatedPublisher extends Publisher<TicketCreatedEvent> {
   subject: Subjects.TicketCreated = Subjects.TicketCreated;
 }
 

@@ -8,6 +8,8 @@ import {
 } from '@sgtickets/common';
 
 import { Ticket } from '../models/ticket';
+import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -38,6 +40,13 @@ router.get('/api/tickets/:id', requireAuth, validations, validateRequest, async 
   });
 
   await ticket.save();
+
+  new TicketUpdatedPublisher(natsWrapper.client).publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+  });
 
   res.send(ticket);
 });
